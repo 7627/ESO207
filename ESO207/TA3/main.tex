@@ -1,0 +1,245 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{mathtools}
+\usepackage{graphicx}
+\graphicspath{ {images/} }
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{RGB}{245,245,245}
+
+\lstdefinestyle{mystyle}{
+    %backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\title{Theoretical Assignment 3}
+\author{Amit Yadav }
+\date{March 2018}
+
+\begin{document}
+
+\maketitle
+
+\section*{Question 1}
+  \textbf{Given:}
+  \begin{itemize}
+      \item A min heap,number of elements in heap, a number x, a number k $(k<n)$
+  \end{itemize}
+  \textbf{Algorithm:}\\
+  \begin{lstlisting}[language=C]
+    function(heap_array, n, x, k, index){
+      static int i=0;
+      if(i>=k) return 1; // 1 represent x is smaller than k_th smallest element
+      if(index>n) return 0; //reached the end
+      if(heap_array[index]<x){
+         i++;
+         return function(heap_array, n, x, k, 2*index) | function(heap_array, n, x, k, 2*index+1);
+      }
+      else return 0;
+    }
+
+    void main(){
+      /* heap_array = [0,a1,a2,a3,a4,...,an] */
+      function(heap_array, n, x, k, 1);
+    }
+  \end{lstlisting}
+  \textbf{Explanation:}\\
+  \textbf{Static int i} counts number of elements less than k. The moment $i\geq k$, our function returns 1.\\
+  \break
+  \textbf{Time complexity:}\\
+  It take k+t max number of comparisions, where t is a number dependent upon heap and k. Therefore, \\
+  \begin{center} Time = O(k) \end{center}
+  \begin{center} Space = O(1) \end{center}
+  \break
+
+\section*{Question 2}
+  \subsection*{Part 1}
+    \textbf{Aim:} To find if an undirected graph is acyclic or not.\\
+    Graph is given as a Adjacency list. As known, DFS visit takes O(V+E) time.
+    I will do the same DFS visit but it will halt execution as soon as a cycle is found.
+    Since, maximum length of a cycle can be $\mid V \mid$, so it will take max O(V) time.\\
+    Worst case will be when it visits all the vertices and edges, which is only possible in case of no cycles present.
+    In that case $\mid E \mid \leq \mid V-1 \mid$, equality holds when graph is connected. So, time will be O(2V) = O(V).\\
+    \textbf{Algorithm:}
+    \begin{lstlisting}[language=Python]
+      cycleFound=False
+      DFS-visit(v, Adj){
+        for u in Adj[v]:
+          if(cycleFound==True):
+            return;
+          if(u!=parent[v]):
+            if(mark[u]==1):
+              cycleFound=True; """If it visits a vertex which is already in process, means cycle is found"""
+              return;
+            else:
+              parent[u]=v;
+              mark[u]=1;
+              DFS-visit(u, Adj);
+              mark[u]=0;
+      }
+
+      DFS(Adj){
+        for v in V:
+          if v not in parent:
+            if(cycleFound==True):
+              return;
+            parent[v]=None;
+            mark[v]=1;
+            DFS-visit(v, Adj);
+            mark[v]=0;
+      }
+
+      DFS(Adj); """calling DFS function"""
+    \end{lstlisting}
+
+  \subsection*{Part 2}
+    \textbf{Aim:} To find if a given undirected graph is tree or not. \\
+    An undirected acyclic graph is a tree if it is connected. So, we essentially need to check if it is acyclic or not, and additionally,
+    if it is connected or not. So our Algorithm will be almost same as \textbf{Part 1}, except there will be one additional condition.\\
+    \textbf{Algorithm:}
+    \begin{lstlisting}[language=Python]
+      cycleFound=False
+      Tree=True
+
+      DFS-visit(v, Adj){
+        for u in Adj[v]:
+          if(cycleFound==True):
+            return;
+          if(u!=parent[v]):
+            if(mark[u]==1):
+              cycleFound=True; """If it visits a vertex which is already in process, means cycle is found"""
+              return;
+            else:
+              parent[u]=v;
+              mark[u]=1;
+              DFS-visit(u, Adj);
+              mark[u]=0;
+      }
+
+      DFS(Adj){
+        parent[v]=None;
+        mark[v]=1;
+        DFS-visit(v, Adj);
+        mark[v]=0;
+        for v in V: """We run DFS-visit on any of the vertex and all the vertices should have been visited if it is a tree"""
+          if v not in parent:
+            Tree=False;
+      }
+
+      DFS(Adj); """calling DFS function"""
+    \end{lstlisting}
+
+
+\section*{Question 3}
+  First we build a undirected graph with given words as vertices and two vertiices are connected if one is \textbf{allowed edit} of other.
+  And then we run \textbf{BFS on word A}. \\
+  So first we need to build the graph from a given D.
+  \begin{lstlisting}[language=Python]
+    allowed_edit(word1,word2){
+      diff=0;
+      size_diff=abs(len(word1)-len(word2));
+      if size_diff>1:
+        return 0;
+      for i in range(0,min( len(word1), len(word1) )):
+        if[word1[i]!=word2[i]]:
+            diff+=1;
+      if(size_diff==0 and diff==1):
+        return 1;
+      if(size_diff==1 and diff==0):
+        return 1;
+      return 0;
+    }
+
+    create_graph{
+      for i in range(0, len(D)):
+        for j in range(i+1, len(D)):
+          if allowed_edit(D[i],D[j]):
+            Adj[D[i]].append(D[j]);
+            Adj[D[j]].append(D[i]);
+    }
+
+  \end{lstlisting}
+
+  Building graph takes $O(n^2c^2)$ time.\\
+  Then running time of BFS on given word is $O(V+E)$, where $\mid V \mid = len(D)$.
+  \begin{lstlisting}[language=Python]
+    BFS(B, Adj){
+      level={B:0};
+      parent={B:None}
+      i=1;
+      x=[B]
+      while(x):
+        neighbours=[];
+        for u in x:
+          for v in Adj[u]:
+            if v not in level:
+              level[v]=i;
+              parent[v]=u;
+              neighbours.append(v);
+              if(v==A): """stop when we reach word A"""
+                x=[];
+                break;
+          x=neighbours;
+          i+=1;
+
+      while(A!=None):
+        print(A);
+        A=parent[A];
+    }
+  \end{lstlisting}
+\textbf{Time Complexity:}
+\begin{enumerate}
+  \item Creating Graph: \\
+    Since, it iterates over D for every word i.e $O(n^2)$, and every check of allowed edit take $O(c^2)$ time,
+    so total time complexity of creating Adjacency list is $O(n^2c^2)$.
+  \item BFS on word B:\\
+    Since BFS takes O(V+E) time, in worst case, $\mid E \mid=O(\mid V \mid^2)$. So, BFS take $O(n^2)$ time.
+\end{enumerate}
+Therefore total time can be expressed as $O(n^2c^2)$.\\
+This is also the worst case time complexity of the algorithm.
+
+\section*{Question 4}
+\textbf{Given:} $h(x)= x mod 10$, a hash table with some entries.\\
+\textbf{To find:} Number of ways to create this given hash table.\\
+\textbf{Sol.} \textbf{42, 23, 34} and \textbf{46} are at their excpected places but \textbf{52} and \textbf{33} are not.
+So it is clear that 42, 23 and 34 must be inserted before 52, else 52 would have occupied one of their places.
+Also, 33 must be inserted after 23, 34, 52 and 46 because of the same reason. Since 52 is inserted before 33 implies 42 is also
+insertes before 33, making 33 to be inserted in the last.
+So possible orders of insertion are:\\
+\underbrace{{42, 23, 34}}_\text{$3!$}, 52, 46, 33\\
+\underbrace{{42,23, 34, 46}}_\text{$4!$}, 52, 33\\
+Therefore, total number of ways= $3! + 4! = 30$
+
+
+\section*{Question 5:}
+Spanning tree with maximum height will look like this:\\
+\includegraphics[width=\textwidth, height=8cm]{spanning_tree.jpg}\\
+When we run DFS, we keep only the tree edges and no backward edges which lead to cycles. So, the result will be this spanning tree.\\
+Height of the tree is \textbf{18}.
+
+
+
+
+
+
+\end{document}

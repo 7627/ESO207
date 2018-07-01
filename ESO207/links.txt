@@ -1,0 +1,5 @@
+http://www.cs.princeton.edu/~rs/AlgsDS07/
+http://courses.ics.hawaii.edu/ReviewICS241/morea/trees/SpanningTrees-QA.pdf
+https://www.cs.princeton.edu/~wayne/kleinberg-tardos/pearson/
+http://www.cs.cmu.edu/afs/cs/academic/class/15251/Site/current/Materials/Handouts/lecture20-proofs.pdf
+http://www.personal.kent.edu/~rmuhamma/Algorithms/MyAlgorithms/GraphAlgor/strongComponent.htm
